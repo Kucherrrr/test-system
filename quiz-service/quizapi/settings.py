@@ -86,7 +86,7 @@ DATABASES = {
         'NAME': os.getenv('DB_NAME', 'quizdb'),
         'USER': os.getenv('DB_USER', 'quizuser'),
         'PASSWORD': os.getenv('DB_PASS', 'quizpass'),
-        'HOST': os.getenv('DB_HOST', 'db'),  # ← имя сервиса из docker-compose.yml
+        'HOST': os.getenv('DB_HOST', 'localhost'),  # ← по умолчанию localhost для CI
         'PORT': '5432',
     }
 }
