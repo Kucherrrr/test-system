@@ -1,0 +1,17 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build and test
+        run: |
+          docker-compose up --build -d
+          sleep 10
+          docker exec test-system-quiz-service-1 python manage.py test
+          docker exec test-system-user-service-1 python manage.py test
+          docker-compose down

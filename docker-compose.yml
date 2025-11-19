@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: quizdb
+      POSTGRES_USER: quizuser
+      POSTGRES_PASSWORD: quizpass
+    volumes:
+      - quiz_data:/var/lib/postgresql/data
+    networks:
+      - testnet
+
+  quiz-service:
+    build: ./quiz-service
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_NAME=quizdb
+      - DB_USER=quizuser
+      - DB_PASS=quizpass
+    networks:
+      - testnet
+
+  user-service:
+    build: ./user-service
+    ports:
+      - "8001:8000"
+    depends_on:
+      - quiz-service
+    networks:
+      - testnet
+
+volumes:
+  quiz_data:
+
+networks:
+  testnet:
+    driver: bridge

@@ -1,0 +1,73 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Тест знаний</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        h2 {
+            color: #2c3e50;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background: #3498db;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+            button:hover {
+                background: #2980b9;
+            }
+
+        .result {
+            background: #e8f4fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Тест знаний</h2>
+
+    {% if question %}
+    <p><strong>Вопрос (уровень: {{ question.level }}):</strong></p>
+    <p>{{ question.text }}</p>
+    <form method="get" action="/answer/">
+        {% for key, value in question.options.items %}
+        <label>
+            <input type="radio" name="answer" value="{{ value }}" required>
+            {{ key }}) {{ value }}
+        </label><br>
+        {% endfor %}
+        <input type="hidden" name="question_id" value="{{ question.id }}">
+        <button type="submit">Отправить ответ</button>
+    </form>
+    {% elif result %}
+    <div class="result">
+        <h3>Тест завершён!</h3>
+        <p>Ваш результат: <strong>{{ result.score }} из {{ result.total }}</strong></p>
+        <a href="/start/">Начать заново</a>
+    </div>
+    {% else %}
+    <p>Ошибка: не удалось получить вопрос.</p>
+    <a href="/start/">Попробовать снова</a>
+    {% endif %}
+</body>
+</html>
