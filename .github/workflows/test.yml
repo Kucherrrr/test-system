@@ -5,13 +5,46 @@ on: [push, pull_request]
 jobs:
   test:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: quizdb
+          POSTGRES_USER: quizuser
+          POSTGRES_PASSWORD: quizpass
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build and test
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies for quiz-service
         run: |
-          docker-compose up --build -d
-          sleep 10
-          docker exec test-system-quiz-service-1 python manage.py test
-          docker exec test-system-user-service-1 python manage.py test
-          docker-compose down
+          pip install -r quiz-service/requirements.txt
+
+      - name: Install dependencies for user-service
+        run: |
+          pip install -r user-service/requirements.txt
+
+      - name: Run migrations and tests for quiz-service
+        run: |
+          cd quiz-service
+          python manage.py migrate
+          python manage.py test
+
+      - name: Run migrations and tests for user-service
+        run: |
+          cd user-service
+          python manage.py migrate
+          python manage.py test
